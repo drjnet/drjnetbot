@@ -1,19 +1,9 @@
 #!/usr/bin/python
 
-import os, requests, json, pprint, telebot, logging, traceback
+import os, requests, json, pprint, telebot, datetime
 import config
 
-# Grab BTC Prices from blockchain.info
-# r = requests.get("https://blockchain.info/ticker") 
-# json_data = json.loads(r.text)
-   
-# Store prices in strings for output
-# price_gbp = "GBP" + str((json_data['GBP']['last']))
-# price_euro = "EUR" + str((json_data['EUR']['last']))
-# price_output="Latest BTC Price \n------------------\n" + price_gbp + " / " + price_euro
-# print (price_output)
-
-
+# Grab latest BTC price data from blockchain.info and return price.
 def get_prices(currency):
     price = 0
     r = requests.get("https://blockchain.info/ticker") 
@@ -21,19 +11,17 @@ def get_prices(currency):
     price=int(round((json_data[currency]['last'])))
     return price
 
-priceTicker = "EUR " + str(get_prices("EUR")) + " / " + "GBP " + str(get_prices("GBP"))
-
-print priceTicker
-
-token = "{telegramtoken}"
-bot = telebot.TeleBot(token)
-
+## TelegramBot Stuff - ensure config.py exists and contains token!!
+bot = telebot.TeleBot(config.telegramToken)
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-    bot.reply_to(message, "Welcome friend. Type /price for latest BTC price in euro and gbp")
+    bot.reply_to(message, "Hey dudes. Type /price for latest BTC price in euro and gbp")
 
 @bot.message_handler(commands=['price'])
-def send_welcome(message):
+def send_price(message):
+    currentDT = datetime.datetime.now()
+    currentDT = currentDT.strftime("%Y-%m-%d %H:%M:%S")
+    priceTicker = "Latest BTC price:\n" + str(currentDT) + "\nEUR " + str(get_prices("EUR")) + " / " + "GBP " + str(get_prices("GBP"))
     bot.reply_to(message, priceTicker)
 
 bot.polling()
