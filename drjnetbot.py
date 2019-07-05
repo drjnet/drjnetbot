@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/python
 
 import os, requests, json, pprint, telebot, datetime
@@ -11,17 +12,27 @@ def get_prices(currency):
     price=int(round((json_data[currency]['last'])))
     return price
 
+
+def get_help():
+    f = open("welcome.md","r") 
+    return f.read()
+
+helpMessage = get_help()
+
 ## TelegramBot Stuff - ensure config.py exists and contains token!!
 bot = telebot.TeleBot(config.telegramToken)
 @bot.message_handler(commands=['start', 'help'])
+
 def send_welcome(message):
-    bot.reply_to(message, "Hey dudes. Type /price for latest BTC price in euro and gbp")
+    helpMessage = get_help()
+    bot.reply_to(message, helpMessage)
 
 @bot.message_handler(commands=['price'])
 def send_price(message):
     currentDT = datetime.datetime.now()
     currentDT = currentDT.strftime("%Y-%m-%d %H:%M:%S")
-    priceTicker = "Latest BTC price:\n" + str(currentDT) + "\nEUR " + str(get_prices("EUR")) + " / " + "GBP " + str(get_prices("GBP"))
+    priceTicker = "(DEV) Latest BTC price:\n" + str(currentDT) + "\nEUR " + str(get_prices("EUR")) + " / " + "GBP " + str(get_prices("GBP"))
     bot.reply_to(message, priceTicker)
+    print "Bot called at " + currentDT
 
 bot.polling()
