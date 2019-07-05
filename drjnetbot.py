@@ -12,27 +12,32 @@ def get_prices(currency):
     price=int(round((json_data[currency]['last'])))
     return price
 
-
 def get_help():
     f = open("welcome.md","r") 
     return f.read()
 
-helpMessage = get_help()
+def get_datetime():
+    currentDT = datetime.datetime.now()
+    currentDT = currentDT.strftime("%Y-%m-%d %H:%M:%S")
+    return currentDT
+
+def write_log(message):
+    currentDT = get_datetime()
+    print str(currentDT) + " " + str(message)
 
 ## TelegramBot Stuff - ensure config.py exists and contains token!!
 bot = telebot.TeleBot(config.telegramToken)
+
 @bot.message_handler(commands=['start', 'help'])
-
 def send_welcome(message):
-    helpMessage = get_help()
-    bot.reply_to(message, helpMessage)
-
+    bot.reply_to(message, get_help())
+    write_log("Welcome message")
+    
 @bot.message_handler(commands=['price'])
 def send_price(message):
-    currentDT = datetime.datetime.now()
-    currentDT = currentDT.strftime("%Y-%m-%d %H:%M:%S")
+    currentDT = get_datetime()
     priceTicker = "(DEV) Latest BTC price:\n" + str(currentDT) + "\nEUR " + str(get_prices("EUR")) + " / " + "GBP " + str(get_prices("GBP"))
     bot.reply_to(message, priceTicker)
-    print "Bot called at " + currentDT
-
+    write_log("Prices requested")
+    
 bot.polling()
