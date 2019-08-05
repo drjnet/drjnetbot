@@ -40,4 +40,4 @@ def send_price(message):
     bot.reply_to(message, priceTicker)
     write_log("Prices requested")
     
-bot.polling()
+bot.polling(none_stop=False, interval=0, timeout=20)
