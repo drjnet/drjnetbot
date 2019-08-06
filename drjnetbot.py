@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/python
 
+# TelegramBotAPI - Bhttps://pypi.org/project/pyTelegramBotAPI/
+
 import os, requests, json, pprint, telebot, datetime
 import config
 
